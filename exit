@@ -1,0 +1,479 @@
+[33mcommit 674d32b57d2cd31f856068b863a8abce33837e5e[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: jakshylyk8890 <jakshylyk.ashyrmamatov@gmail.com>
+Date:   Fri Feb 10 10:54:16 2023 +0600
+
+    Terraform final project modules
+
+[1mdiff --git a/eks/SecuritGroups.tf b/eks/SecuritGroups.tf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b3a8d5f[m
+[1m--- /dev/null[m
+[1m+++ b/eks/SecuritGroups.tf[m
+[36m@@ -0,0 +1,46 @@[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐒𝐄𝐂𝐔𝐑𝐈𝐓𝐘 𝐆𝐑𝐎𝐔𝐏 𝐅𝐎𝐑 𝐓𝐇𝐄 𝐍𝐎𝐃𝐄 𝐆𝐑𝐎𝐔𝐏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_security_group" "js-sg-node" {[m
+[32m+[m[32m        name        = "${var.env}-security_group-cluster"[m
+[32m+[m[32m        vpc_id      = var.vpc[m
+[32m+[m[32m  dynamic "ingress" {[m
+[32m+[m[32m        for_each = var.ingress[m[41m [m
+[32m+[m[32m  content {[m
+[32m+[m[32m        from_port = ingress.value[m
+[32m+[m[32m        to_port = ingress.value[m
+[32m+[m[32m        protocol = "-1"[m
+[32m+[m[32m        cidr_blocks =  ["0.0.0.0/0"][m
+[32m+[m[32m    }[m
+[32m+[m[32m  }[m
+[32m+[m[32m  egress {[m
+[32m+[m[32m        from_port        = 0[m
+[32m+[m[32m        to_port          = 0[m
+[32m+[m[32m        protocol         = "-1"[m
+[32m+[m[32m        cidr_blocks      = ["0.0.0.0/0"][m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐒𝐄𝐂𝐔𝐑𝐈𝐓𝐘 𝐆𝐑𝐎𝐔𝐏 𝐅𝐎𝐑 𝐋𝐀𝐔𝐍𝐂𝐇 𝐓𝐄𝐌𝐏𝐋𝐀𝐓𝐄﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_security_group" "for_launch-sg" {[m
+[32m+[m[32m        name        = "for-launch_templ"[m
+[32m+[m[32m        description = "Allow TLS inbound traffic"[m
+[32m+[m[32m        vpc_id      = var.vpc[m
+[32m+[m
+[32m+[m[32m  ingress {[m
+[32m+[m[32m        description      = "TLS from VPC"[m
+[32m+[m[32m        from_port        = 0[m
+[32m+[m[32m        to_port          = 0[m
+[32m+[m[32m        protocol         = "-1"[m
+[32m+[m[32m        cidr_blocks      = ["0.0.0.0/0"][m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m  egress {[m
+[32m+[m[32m        from_port        = 0[m
+[32m+[m[32m        to_port          = 0[m
+[32m+[m[32m        protocol         = "-1"[m
+[32m+[m[32m        cidr_blocks      = ["0.0.0.0/0"][m
+[32m+[m[32m        ipv6_cidr_blocks = ["::/0"][m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    tags = {[m
+[32m+[m[32m        Name = "allow_tls"[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/eks/main.tf b/eks/main.tf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f821800[m
+[1m--- /dev/null[m
+[1m+++ b/eks/main.tf[m
+[36m@@ -0,0 +1,81 @@[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐄𝐊𝐒 𝐂𝐋𝐔𝐒𝐓𝐄𝐑﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_eks_cluster" "cluster" {[m
+[32m+[m[32m    version  = "1.24"[m
+[32m+[m[32m    name     = "${var.env}-eks"[m
+[32m+[m[32m    role_arn = aws_iam_role.EKSClusterRole.arn[m
+[32m+[m[41m  [m
+[32m+[m
+[32m+[m[32m  vpc_config {[m
+[32m+[m[32m        endpoint_private_access = true[m
+[32m+[m[32m        endpoint_public_access = true[m
+[32m+[m[32m        public_access_cidrs = ["0.0.0.0/0"][m
+[32m+[m[32m        security_group_ids = [aws_security_group.js-sg-node.id][m
+[32m+[m[32m        subnet_ids = var.private_subnet_id[m
+[32m+[m[41m    [m
+[32m+[m[32m      }[m
+[32m+[m
+[32m+[m[41m [m
+[32m+[m[32m      depends_on = [[m
+[32m+[m[32m        aws_iam_role_policy_attachment.AmazonEKSClusterPolicy,[m
+[32m+[m[32m        aws_iam_role_policy_attachment.AmazonEKSVPCResourceController,[m
+[32m+[m[32m      ][m
+[32m+[m[32m}[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐄𝐊𝐒 𝐍𝐎𝐃𝐄 𝐆𝐑𝐎𝐔𝐏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_eks_node_group" "node-gr-js" {[m
+[32m+[m[32m    for_each = local.node_group[m
+[32m+[m[32m    cluster_name    = aws_eks_cluster.cluster.name[m
+[32m+[m[32m    node_group_name = each.value[m
+[32m+[m[32m    node_role_arn   = aws_iam_role.NodeGroupRole.arn[m
+[32m+[m[32m    subnet_ids      = var.private_subnet_id[m
+[32m+[m
+[32m+[m[32m  scaling_config {[m
+[32m+[m[32m      desired_size   = var.env == "prod" ? 3 : 2[m
+[32m+[m[32m      max_size       = var.env == "prod" ? max(3,0,1) : 3[m
+[32m+[m[32m      min_size       = var.env == "prod" ? min(12, 54, 3) : 1[m
+[32m+[m[32m      }[m
+[32m+[m
+[32m+[m[32m  update_config {[m
+[32m+[m[32m      max_unavailable = 1[m
+[32m+[m[32m  }[m
+[32m+[m[32m  launch_template {[m
+[32m+[m[32m      id = aws_launch_template.templ.id[m
+[32m+[m[32m      version = "$Latest"[m
+[32m+[m[32m     }[m
+[32m+[m
+[32m+[m[32m     ami_type       = "AL2_x86_64" # AL2_x86_64, AL2_x86_64_GPU, AL2_ARM_64, CUSTOM[m
+[32m+[m[32m      capacity_type  = "ON_DEMAND"  # ON_DEMAND, SPOT[m
+[32m+[m
+[32m+[m[41m  [m
+[32m+[m[32m      depends_on = [[m
+[32m+[m[32m        aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy,[m
+[32m+[m[32m        aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy,[m
+[32m+[m[32m        aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly,[m
+[32m+[m[32m        ][m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐋𝐀𝐔𝐍𝐂𝐇 𝐓𝐄𝐌𝐏𝐋𝐀𝐓𝐄﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_launch_template" "templ" {[m
+[32m+[m[32m      name = "${var.env}-jaks-templ"[m
+[32m+[m[32m      instance_type = var.env == "dev" ? lookup(var.instance_type, "dev") : lookup(var.instance_type, "stage")[m
+[32m+[m
+[32m+[m[32m  network_interfaces {[m
+[32m+[m[32m      associate_public_ip_address = false[m
+[32m+[m[32m      security_groups = ["${aws_security_group.for_launch-sg.id}"][m[41m [m
+[32m+[m[32m  }[m
+[32m+[m[32m  tag_specifications {[m
+[32m+[m[32m      resource_type = "instance"[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    tags = {[m
+[32m+[m[32m        Name = "${var.env}-instance"[m
+[32m+[m[32m        environment = "${var.env}"[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m[41m  [m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mdata "aws_ami" "ubuntu" {[m
+[32m+[m[32m    most_recent      = true[m
+[32m+[m[32m    owners           = ["704109570831"][m
+[32m+[m[32m  }[m
+[32m+[m
+[1mdiff --git a/eks/outputs.tf b/eks/outputs.tf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..efb1c68[m
+[1m--- /dev/null[m
+[1m+++ b/eks/outputs.tf[m
+[36m@@ -0,0 +1,10 @@[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐎𝐔𝐓𝐏𝐔𝐓𝐒 𝐎𝐅 𝐓𝐇𝐄 𝐄𝐊𝐒﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32moutput "endpoint" {[m
+[32m+[m[32m    value = aws_eks_cluster.cluster.endpoint[m
+[32m+[m[32m    description = "Endpoint for your Kubernetes API server"[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32moutput "kubeconfig-certificate-authority-data" {[m
+[32m+[m[32m    value = aws_eks_cluster.cluster.certificate_authority[0].data[m
+[32m+[m[32m    description = "Base64 encoded certificate data required to communicate with your cluster."[m
+[32m+[m[32m    }[m
+\ No newline at end of file[m
+[1mdiff --git a/eks/roles.tf b/eks/roles.tf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f5150e9[m
+[1m--- /dev/null[m
+[1m+++ b/eks/roles.tf[m
+[36m@@ -0,0 +1,59 @@[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐑𝐎𝐋𝐄 𝐅𝐎𝐑 𝐄𝐊𝐒 𝐂𝐋𝐔𝐒𝐓𝐄𝐑﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_iam_role" "EKSClusterRole" {[m
+[32m+[m[32m    name = "EKSClusterRole"[m
+[32m+[m
+[32m+[m[32m    assume_role_policy = <<POLICY[m
+[32m+[m[32m{[m
+[32m+[m[32m  "Version": "2012-10-17",[m
+[32m+[m[32m  "Statement": [[m
+[32m+[m[32m    {[m
+[32m+[m[32m      "Effect": "Allow",[m
+[32m+[m[32m      "Principal": {[m
+[32m+[m[32m        "Service": "eks.amazonaws.com"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      "Action": "sts:AssumeRole"[m
+[32m+[m[32m    }[m
+[32m+[m[32m  ][m
+[32m+[m[32m}[m
+[32m+[m[32mPOLICY[m
+[32m+[m[32m}[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐀𝐓𝐓𝐀𝐂𝐇 𝐏𝐎𝐋𝐈𝐂𝐈𝐄𝐒 𝐓𝐎 𝐄𝐊𝐒 𝐂𝐋𝐔𝐒𝐓𝐄𝐑 𝐑𝐎𝐋𝐄﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {[m
+[32m+[m[32m    policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"[m
+[32m+[m[32m    role       = aws_iam_role.EKSClusterRole.name[m
+[32m+[m[32m}[m
+[32m+[m[32mresource "aws_iam_role_policy_attachment" "AmazonEKSVPCResourceController" {[m
+[32m+[m[32m    policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"[m
+[32m+[m[32m    role       = aws_iam_role.EKSClusterRole.name[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐑𝐎𝐋𝐄 𝐅𝐎𝐑 𝐓𝐇𝐄 𝐍𝐎𝐃𝐄 𝐆𝐑𝐎𝐔𝐏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_iam_role" "NodeGroupRole" {[m
+[32m+[m[32m    name = "eks-node-group-example22"[m
+[32m+[m
+[32m+[m[32m  assume_role_policy = jsonencode({[m
+[32m+[m[32m        Statement = [{[m
+[32m+[m[32m            Action = "sts:AssumeRole"[m
+[32m+[m[32m            Effect = "Allow"[m
+[32m+[m[32m            Principal = {[m
+[32m+[m[32m            Service = "ec2.amazonaws.com"[m
+[32m+[m[32m            }[m
+[32m+[m[32m            }][m
+[32m+[m[32m    Version = "2012-10-17"[m
+[32m+[m[32m  })[m
+[32m+[m[32m}[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐀𝐓𝐓𝐀𝐂𝐇 𝐏𝐎𝐋𝐈𝐄𝐂𝐈𝐄𝐒 𝐓𝐎 𝐍𝐎𝐃𝐄 𝐆𝐑𝐎𝐔𝐏 𝐑𝐎𝐋𝐄﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_iam_role_policy_attachment" "AmazonEKSWorkerNodePolicy" {[m
+[32m+[m[32m        policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"[m
+[32m+[m[32m        role       = aws_iam_role.NodeGroupRole.name[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mresource "aws_iam_role_policy_attachment" "AmazonEKS_CNI_Policy" {[m
+[32m+[m[32m        policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"[m
+[32m+[m[32m        role       = aws_iam_role.NodeGroupRole.name[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mresource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {[m
+[32m+[m[32m        policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"[m
+[32m+[m[32m        role       = aws_iam_role.NodeGroupRole.name[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/eks/variables.tf b/eks/variables.tf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..13748fb[m
+[1m--- /dev/null[m
+[1m+++ b/eks/variables.tf[m
+[36m@@ -0,0 +1,35 @@[m
+[32m+[m[32mvariable "env" {[m
+[32m+[m[32m   type = string[m
+[32m+[m[32m    default = "dev"[m
+[32m+[m[32m    description = "specified resources enviroment"[m
+[32m+[m[41m  [m
+[32m+[m[32m}[m
+[32m+[m[32mvariable "ingress" {[m
+[32m+[m[32m   default = ["0"][m
+[32m+[m[32m   description = "specified multiple times for each ingress rule"[m
+[32m+[m[32m}[m
+[32m+[m[32mvariable "instance_type" {[m
+[32m+[m[32m   default = {[m
+[32m+[m[32m      "dev" = "t1.micro"[m
+[32m+[m[32m      "stage" = "t2.micro"[m
+[32m+[m[32m      "prod" = "t2.nano"[m
+[32m+[m[32m      description = "use for the instance"[m
+[32m+[m[32m   }[m
+[32m+[m[32m}[m
+[32m+[m[32mvariable "vpc"{[m
+[32m+[m[32m      type = string[m
+[32m+[m[32m      default = ""[m
+[32m+[m[32m      description = "ID of the vpc"[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mvariable "private_subnet_id" {[m
+[32m+[m[32m  description = "CIDR of the private subnets"[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mlocals {[m
+[32m+[m[32m  node_group= {[m
+[32m+[m[41m    [m
+[32m+[m[32m    node_group_name = "${var.env}node-group1"[m
+[32m+[m[41m   [m
+[32m+[m[32m   }[m
+[32m+[m[32m}[m
+[1mdiff --git a/instance/main.tf b/instance/main.tf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..dca16e6[m
+[1m--- /dev/null[m
+[1m+++ b/instance/main.tf[m
+[36m@@ -0,0 +1,17 @@[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐁𝐀𝐒𝐓𝐈𝐎𝐍 𝐇𝐎𝐒𝐓﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_instance" "bastion" {[m
+[32m+[m[41m [m
+[32m+[m[32m  ami                         = data.aws_ami.ubuntu.id[m
+[32m+[m[32m  instance_type               = var.ec2_type[m
+[32m+[m[32m  security_groups      = [var.ec2-sg][m
+[32m+[m[32m  associate_public_ip_address = true[m
+[32m+[m[32m  subnet_id                   = var.public_subnet[m
+[32m+[m[32m   tags = {[m
+[32m+[m[32m        Name = "${var.env}-bastion_host"[m
+[32m+[m[32m        environment = "${var.env}"[m
+[32m+[m[32m      }[m
+[32m+[m[32m}[m
+[32m+[m[32mdata "aws_ami" "ubuntu" {[m
+[32m+[m[32m    most_recent      = true[m
+[32m+[m[32m    owners           = ["704109570831"][m
+[32m+[m[32m  }[m
+[1mdiff --git a/instance/output.tf b/instance/output.tf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..85550d7[m
+[1m--- /dev/null[m
+[1m+++ b/instance/output.tf[m
+[36m@@ -0,0 +1,4 @@[m
+[32m+[m[32moutput "ec2" {[m
+[32m+[m[32m    value = aws_instance.bastion.id[m
+[32m+[m[32m    description = "output of instance id"[m[41m  [m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/instance/variable.tf b/instance/variable.tf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..99db1ef[m
+[1m--- /dev/null[m
+[1m+++ b/instance/variable.tf[m
+[36m@@ -0,0 +1,20 @@[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐕𝐀𝐑𝐈𝐀𝐁𝐋𝐄𝐒﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mvariable "env" {[m
+[32m+[m[32m  type = string[m
+[32m+[m[32m  description = "specified resources enviroment"[m
+[32m+[m[32m}[m
+[32m+[m[32mvariable "ec2_type" {[m
+[32m+[m[32m  type        = string[m
+[32m+[m[32m  default     = "t2.micro"[m
+[32m+[m[32m  description = "Bastion instance type"[m
+[32m+[m[32m}[m
+[32m+[m[32mvariable "public_subnet" {[m
+[32m+[m[32m  type = string[m
+[32m+[m[32m  default = ""[m
+[32m+[m[32m  description = "CIDR of the public subnet"[m
+[32m+[m[32m}[m
+[32m+[m[32mvariable "ec2-sg" {[m
+[32m+[m[32m  type = string[m[41m [m
+[32m+[m[32m  default = ""[m
+[32m+[m[32m  description = "ID of the security group"[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/vpc/main.tf b/vpc/main.tf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..6ed8661[m
+[1m--- /dev/null[m
+[1m+++ b/vpc/main.tf[m
+[36m@@ -0,0 +1,140 @@[m
+[32m+[m
+[32m+[m[32m# 𝑽𝑷𝑪[m
+[32m+[m[32m# 𝑃𝑢𝑏𝑙𝑖𝑐 𝑆𝑢𝑏𝑛𝑒𝑡𝑠 𝑤𝑖𝑡ℎ 𝑐𝑜𝑛𝑓𝑖𝑔𝑢𝑟𝑒𝑑 𝑅𝑜𝑢𝑡𝑒 𝑇𝑎𝑏𝑙𝑒𝑠 (𝐼𝐺𝑊)[m
+[32m+[m[32m# 𝑃𝑟𝑖𝑣𝑎𝑡𝑒 𝑆𝑢𝑏𝑛𝑒𝑡𝑠 𝑤𝑖𝑡ℎ 𝑐𝑜𝑛𝑓𝑖𝑔𝑢𝑟𝑒𝑑 𝑅𝑜𝑢𝑡𝑒 𝑇𝑎𝑏𝑙𝑒𝑠 (𝑁𝐴𝑇-𝐺𝑊)[m
+[32m+[m[32m#﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32m#  ᴍᴀᴅᴇ ʙʏ 𝐉𝐀𝐊𝐒𝐇𝐘𝐋𝐘𝐊 𝐀𝐒𝐇𝐘𝐑𝐌𝐀𝐌𝐀𝐓𝐎𝐕[m[41m [m
+[32m+[m[32m#[m
+[32m+[m[32m#       Copyright © 2023[m
+[32m+[m
+[32m+[m
+[32m+[m[32m// ✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐕𝐏𝐂﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_vpc" "jeks" {[m
+[32m+[m[32m      cidr_block = var.vpc_cidr[m
+[32m+[m[32m      tags = {[m
+[32m+[m[32m      Name = "${var.env}-░V░P░C░"[m
+[32m+[m[32m      enviroment = "${var.env}"[m
+[32m+[m[32m      }[m
+[32m+[m[32m}[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐏𝐔𝐁𝐋𝐈𝐂 𝐒𝐔𝐁𝐍𝐄𝐓﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_subnet" "pub1" {[m
+[32m+[m[32m        count = length(var.public_subnet_cidr)[m
+[32m+[m[32m        vpc_id     = aws_vpc.jeks.id[m
+[32m+[m[32m        cidr_block = var.public_subnet_cidr[count.index][m
+[32m+[m[32m        availability_zone = data.aws_availability_zones.available.names[count.index][m
+[32m+[m[32m        map_public_ip_on_launch = true[m
+[32m+[m[32m        tags = {[m
+[32m+[m[32m        Name = "${var.env}-𝐒𝐔𝐁𝐍𝐄𝐓${count.index + 1}﹏﹏"[m
+[32m+[m[32m        "kubernetes.io/role/elb" = "1"[m
+[32m+[m[32m        enviroment = "${var.env}"[m
+[32m+[m[32m        }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m// ✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐈𝐍𝐓𝐄𝐑𝐍𝐄𝐓 𝐆𝐀𝐓𝐄𝐖𝐀𝐘 ﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_internet_gateway" "gw" {[m
+[32m+[m[32m      vpc_id = aws_vpc.jeks.id[m
+[32m+[m
+[32m+[m[32m      tags = {[m
+[32m+[m[32m      Name = "${var.env}-𝒊𝒏𝒕𝒆𝒓𝒏𝒆𝒕-𝒈𝒂𝒕𝒆𝒘𝒂𝒚"[m
+[32m+[m[32m      enviroment = "${var.env}"[m
+[32m+[m[32m      }[m
+[32m+[m[32m}[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐏𝐔𝐁𝐋𝐈𝐂 𝐑𝐎𝐔𝐓𝐄 𝐓𝐀𝐁𝐋𝐄﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_route_table" "rt" {[m
+[32m+[m[32m        count = length(var.public_subnet_cidr)[m
+[32m+[m[32m        vpc_id = aws_vpc.jeks.id[m
+[32m+[m
+[32m+[m[32m  route {[m
+[32m+[m[32m        cidr_block = "0.0.0.0/0"[m
+[32m+[m[32m        gateway_id = aws_internet_gateway.gw.id[m
+[32m+[m[32m        }[m
+[32m+[m[32m        tags = {[m
+[32m+[m[32m        Name = "-${var.env}-ROUTE${count.index + 1}☆☆╮"[m
+[32m+[m[32m        enviroment = "${var.env}"[m
+[32m+[m[32m        }[m
+[32m+[m[32m}[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐏𝐔𝐁𝐋𝐈𝐂 𝐑𝐎𝐔𝐓𝐄 𝐓𝐀𝐁𝐋𝐄 𝐀𝐒𝐒𝐎𝐂𝐈𝐀𝐓𝐈𝐎𝐍﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_route_table_association" "a" {[m
+[32m+[m[32m        count = length(var.public_subnet_cidr)[m
+[32m+[m[32m        subnet_id      = aws_subnet.pub1.*.id[count.index][m
+[32m+[m[32m        route_table_id = aws_route_table.rt.*.id[count.index][m
+[32m+[m[32m}[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐏𝐑𝐈𝐕𝐀𝐓𝐄 𝐒𝐔𝐁𝐍𝐄𝐓 ﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_subnet" "priv1" {[m
+[32m+[m[32m        count = length(var.private_subnet_cidr)[m
+[32m+[m[32m        vpc_id     = aws_vpc.jeks.id[m
+[32m+[m[32m        cidr_block = var.private_subnet_cidr[count.index][m
+[32m+[m[32m        availability_zone = data.aws_availability_zones.available.names[count.index][m
+[32m+[m[32m        tags = {[m
+[32m+[m[32m        Name = "${var.env}-Private_sb${count.index + 1}﹏﹏"[m
+[32m+[m[32m        "kubernetes.io/role/internal-elb" = "1"[m
+[32m+[m[32m        enviroment = "${var.env}"[m
+[32m+[m[32m        }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐍𝐀𝐓 𝐆𝐀𝐓𝐄𝐖𝐀𝐘﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_nat_gateway" "natgw-js" {[m
+[32m+[m[32m        count         = length(var.private_subnet_cidr)[m
+[32m+[m[32m        allocation_id = aws_eip.elastic_ip[count.index].id[m
+[32m+[m[32m        subnet_id     = element(aws_subnet.pub1[*].id, count.index)[m
+[32m+[m
+[32m+[m[32m   tags = {[m
+[32m+[m[32m            Name = "${var.env}gw NAT"[m
+[32m+[m[32m            enviroment = "${var.env}"[m
+[32m+[m[32m        }[m
+[32m+[m[32m   depends_on = [aws_internet_gateway.gw][m
+[32m+[m[32m}[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐄𝐋𝐀𝐒𝐓𝐈𝐂 𝐈𝐏 𝐀𝐃𝐃𝐑𝐄𝐒𝐒﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_eip" "elastic_ip" {[m
+[32m+[m[32m        count = length(var.private_subnet_cidr)[m
+[32m+[m[32m        vpc      = true[m
+[32m+[m[32m     tags = {[m
+[32m+[m[32m        Name = "${var.env}-elastic_ip${count.index + 1}﹏"[m
+[32m+[m[32m        enviroment = "${var.env}"[m
+[32m+[m[32m        }[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐏𝐑𝐈𝐕𝐀𝐓𝐄 𝐑𝐎𝐔𝐓𝐄 𝐓𝐀𝐁𝐋𝐄﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_route_table" "priv-rt" {[m
+[32m+[m[32m        count = length(var.private_subnet_cidr)[m
+[32m+[m[32m        vpc_id = aws_vpc.jeks.id[m
+[32m+[m
+[32m+[m[32m  route {[m
+[32m+[m[32m        cidr_block = "0.0.0.0/0"[m
+[32m+[m[32m        gateway_id = aws_nat_gateway.natgw-js[count.index].id[m
+[32m+[m[32m        }[m
+[32m+[m[32m        tags = {[m
+[32m+[m[32m        Name = "-${var.env}-Private_routes${count.index + 1}☆☆╮"[m
+[32m+[m[32m        enviroment = "${var.env}"[m
+[32m+[m[32m        }[m
+[32m+[m[32m}[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐏𝐑𝐈𝐕𝐀𝐓𝐄 𝐑𝐎𝐔𝐓𝐄 𝐓𝐀𝐁𝐋𝐄 𝐀𝐒𝐒𝐎𝐂𝐈𝐀𝐓𝐈𝐎𝐍﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_route_table_association" "b" {[m
+[32m+[m[32m        count = length(var.private_subnet_cidr)[m
+[32m+[m[32m        subnet_id      = element(aws_subnet.priv1[*].id, count.index)[m
+[32m+[m[32m        route_table_id = element(aws_route_table.priv-rt[*].id, count.index)[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m//✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐒𝐄𝐂𝐔𝐑𝐈𝐓𝐘 𝐆𝐑𝐎𝐔𝐏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏[m
+[32m+[m[32mresource "aws_security_group" "js-sg" {[m
+[32m+[m[32m        name        = "${var.env}-security_group"[m
+[32m+[m[32m        vpc_id      = aws_vpc.jeks.id[m
+[32m+[m[32m  dynamic "ingress" {[m
+[32m+[m[32m      for_each = var.ingress[m[41m [m
+[32m+[m[32m  content {[m
+[32m+[m[32m        from_port = ingress.value[m
+[32m+[m[32m        to_port = ingress.value[m
+[32m+[m[32m        protocol = "-1"[m
+[32m+[m[32m        cidr_blocks =  ["0.0.0.0/0"][m
+[32m+[m[32m        }[m
+[32m+[m[32m  }[m
+[32m+[m[32m  egress {[m
+[32m+[m[32m        from_port        = 0[m
+[32m+[m[32m        to_port          = 0[m
+[32m+[m[32m        protocol         = "-1"[m
+[32m+[m[32m        cidr_blocks      = ["0.0.0.0/0"][m
+[32m+[m[32m   }[m
+[32m+[m[32m}[m
+[32m+[m[32mdata "aws_availability_zones" "available" {[m
+[32m+[m[32m  state = "available"[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --
