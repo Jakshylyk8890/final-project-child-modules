@@ -1,5 +1,5 @@
 
-
+## VPC
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
@@ -45,7 +45,7 @@
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 
-
+## EKS
 | Name | Type |
 |------|------|
 | [aws_eks_cluster.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster) | resource |
@@ -79,7 +79,7 @@
 | <a name="output_endpoint"></a> [endpoint](#output\_endpoint) | Endpoint for your Kubernetes API server |
 | <a name="output_kubeconfig-certificate-authority-data"></a> [kubeconfig-certificate-authority-data](#output\_kubeconfig-certificate-authority-data) | Base64 encoded certificate data required to communicate with your cluster. |
 
-
+## Bastion Host
 
 | Name | Version |
 |------|---------|
