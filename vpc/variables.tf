@@ -18,14 +18,7 @@ variable "public_subnet_cidr" {
     ]
   description = "CIDR of the public subnets"
 }
-variable "private_subnet_cidr" {
-    default = [
-        "10.5.4.0/24",
-        "10.5.5.0/24",
-        "10.5.6.0/24",
-    ]
-  description = "CIDR of the private subnets"
-}
+
 
 variable "ingress" {
    default = ["0"]
