@@ -125,13 +125,13 @@ resource "aws_eks_node_group" "node-gr-js" {
   update_config {
       max_unavailable = 1
   }
-  launch_template {
-      id = aws_launch_template.templ.id
-      version = "$Latest"
-     }
+#   launch_template {
+#       id = aws_launch_template.templ.id
+#       version = "$Latest"
+#      }
 
-     ami_type       = "AL2_x86_64" # AL2_x86_64, AL2_x86_64_GPU, AL2_ARM_64, CUSTOM
-      capacity_type  = "ON_DEMAND"  # ON_DEMAND, SPOT
+#      ami_type       = "AL2_x86_64" # AL2_x86_64, AL2_x86_64_GPU, AL2_ARM_64, CUSTOM
+#       capacity_type  = "ON_DEMAND"  # ON_DEMAND, SPOT
 
   
       depends_on = [
