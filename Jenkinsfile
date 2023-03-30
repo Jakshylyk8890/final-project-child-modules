@@ -19,7 +19,7 @@ stages {
         stage('Terraform Plan') {
             steps {
                    
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'creds2', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-1', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
                 {
                 sh 'terraform -chdir=vpc plan'
                 }
@@ -32,7 +32,7 @@ stages {
 	        //         }
 			
 	        //         echo "Initiating deployment"
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'creds2', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-1', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
 		    
 		    {
                 
@@ -42,7 +42,7 @@ stages {
         }
         stage('Terraform Destroy') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'creds2', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-1', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
       
 		    {
                 
