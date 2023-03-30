@@ -11,35 +11,7 @@ stages {
         //         sh 'ls'
         //     }
         // }
-        stage('Terraform Init') {
-            steps {
-                sh 'terraform -chdir=vpc init'
-            }
-        }
-        stage('Terraform Plan') {
-            steps {
-                   
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-1', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
-                {
-                sh 'terraform -chdir=vpc plan'
-                }
-            }
-            }
-        stage('Terraform Apply') {
-            steps {
-		    // timeout(time: 15, unit: "MINUTES") {
-	        //             input message: 'Do you want to approve the Terraform apply?', ok: 'Yes'
-	        //         }
-			
-	        //         echo "Initiating deployment"
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-1', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
-		    
-		    {
-                
-                sh 'terraform -chdir=vpc apply -auto-approve'
-                }
-            }
-        }
+        
 	stage('Terraform Init2') {
             steps {
                 sh 'terraform -chdir=eks init'
