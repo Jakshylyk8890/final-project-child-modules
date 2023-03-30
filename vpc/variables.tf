@@ -6,7 +6,7 @@ variable "vpc_cidr" {
 
 variable "env" {
     type = string
-    default = "𝒋𝒂𝒌𝒔"
+    default = "jaks"
     description = "specified resources enviroment"
 }
 variable "public_subnet_cidr" {
