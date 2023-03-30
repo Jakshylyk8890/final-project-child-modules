@@ -54,7 +54,7 @@ stages {
                 }
             }
             }
-        stage('Terraform Apply') {
+        stage('Terraform Apply2') {
             steps {
 		    // timeout(time: 15, unit: "MINUTES") {
 	        //             input message: 'Do you want to approve the Terraform apply?', ok: 'Yes'
