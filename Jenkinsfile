@@ -1,16 +1,16 @@
 pipeline {
     agent any
 stages {
-        stage('Git Checkout') {
-            steps {
-                git branch: 'EKS', credentialsId: 'jakshylyk-gi', url: 'https://github.com/Jakshylyk8890/final-project-child-modules.git'
-            }
-        }
-        stage('check pwd') {
-            steps {
-                sh 'ls'
-            }
-        }
+        // stage('Git Checkout') {
+        //     steps {
+        //         git branch: 'EKS', credentialsId: 'jakshylyk-gi', url: 'https://github.com/Jakshylyk8890/final-project-child-modules.git'
+        //     }
+        // }
+        // stage('check pwd') {
+        //     steps {
+        //         sh 'ls'
+        //     }
+        // }
         stage('Terraform Init') {
             steps {
                 sh 'terraform -chdir=vpc init'
