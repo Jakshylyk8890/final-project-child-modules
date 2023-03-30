@@ -98,7 +98,7 @@ resource "aws_eks_cluster" "cluster" {
         endpoint_public_access = true
         public_access_cidrs = ["0.0.0.0/0"]
         security_group_ids = [aws_security_group.js-sg-node.id]
-        subnet_ids = var.private_subnet_id
+        subnet_ids = aws_subnet_pub1_id
     
       }
 
@@ -114,7 +114,7 @@ resource "aws_eks_node_group" "node-gr-js" {
     cluster_name    = aws_eks_cluster.cluster.name
     node_group_name = each.value
     node_role_arn   = aws_iam_role.NodeGroupRole.arn
-    subnet_ids      = var.private_subnet_id
+    subnet_ids      = aws_subnet_pub1_id
 
   scaling_config {
       desired_size   = var.env == "prod" ? 3 : 2
