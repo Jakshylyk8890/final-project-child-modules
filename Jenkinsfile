@@ -40,12 +40,12 @@ stages {
                 }
             }
         }
-	stage('Terraform Init') {
+	stage('Terraform Init2') {
             steps {
                 sh 'terraform -chdir=eks init'
             }
         }
-        stage('Terraform Plan') {
+        stage('Terraform Plan2') {
             steps {
                    
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-1', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
