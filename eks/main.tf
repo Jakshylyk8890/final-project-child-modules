@@ -144,7 +144,7 @@ resource "aws_eks_node_group" "node-gr-js" {
 //✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏𝐂𝐑𝐄𝐀𝐓𝐄 𝐋𝐀𝐔𝐍𝐂𝐇 𝐓𝐄𝐌𝐏𝐋𝐀𝐓𝐄﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏
 resource "aws_launch_template" "templ" {
       name = "${var.env}-jaks-templ"
-      instance_type = var.env == "dev" ? lookup(var.instance_type, "dev") : lookup(var.instance_type, "stage")
+      instance_type = t2.micro
 
   network_interfaces {
       associate_public_ip_address = false
