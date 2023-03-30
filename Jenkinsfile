@@ -8,12 +8,12 @@ stages {
         }
         stage('check pwd') {
             steps {
-                sh 'pwd && ls'
+                sh 'ls'
             }
         }
         stage('Terraform Init') {
             steps {
-                sh 'terraform init'
+                sh 'terraform -chdir=vpc init'
             }
         }
         stage('Terraform Plan') {
@@ -21,22 +21,22 @@ stages {
                    
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'creds2', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
                 {
-                sh 'terraform plan'
+                sh 'terraform -chdir=vpc plan'
                 }
             }
             }
         stage('Terraform Apply') {
             steps {
-		    timeout(time: 15, unit: "MINUTES") {
-	                    input message: 'Do you want to approve the Terraform apply?', ok: 'Yes'
-	                }
+		    // timeout(time: 15, unit: "MINUTES") {
+	        //             input message: 'Do you want to approve the Terraform apply?', ok: 'Yes'
+	        //         }
 			
-	                echo "Initiating deployment"
+	        //         echo "Initiating deployment"
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'creds2', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
 		    
 		    {
                 
-                sh 'terraform apply --auto-approve'
+                sh 'terraform -chdir=vpc apply -auto-approve'
                 }
             }
         }
