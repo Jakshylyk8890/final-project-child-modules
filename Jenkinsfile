@@ -41,3 +41,24 @@ stages {
                 }
             }
         }
+        stage('Terraform Destroy') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws2', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) 
+      
+		    {
+                
+                sh 'terraform destroy --auto-approve'
+                }
+            }
+        }
+    }
+    post {
+	
+       success {
+           emailext to: "jakshylyk.ashyrmamatov@gmail.com",
+            subject: "Sended by Jakshylyk",
+            body: "FROM Jenkins",
+            attachLog: true
+		    }
+    }
+}
