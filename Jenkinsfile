@@ -1,6 +1,6 @@
 pipeline{
 
- agent  any
+ agent  any//{ label 'Akmaral'}
  stages {
     stage('init') {
     steps {
@@ -9,7 +9,7 @@ pipeline{
     }
     stage('plan') {
     steps {
-        withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId: 'aws2', secretKeyVarible: 'AWS_SECRET_ACCESS_KEY')]) {
+        withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId: 'aws3', secretKeyVarible: 'AWS_SECRET_ACCESS_KEY')]) {
         sh 'terraform plan '
         }
     }
@@ -17,14 +17,14 @@ pipeline{
     stage('terraform apply') {
     steps {
         
-        withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId: 'aws2', secretKeyVarible: 'AWS_SECRET_ACCESS_KEY')]) {
+        withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId: 'aws3', secretKeyVarible: 'AWS_SECRET_ACCESS_KEY')]) {
         sh 'terraform apply  -auto-approve '
         }
     }
     }
     stage('Integrate Jenkins with EKS Cluster and Deploy') {
     steps {
-        withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId: 'aws2', secretKeyVarible: 'AWS_SECRET_ACCESS_KEY')]) {
+        withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId: 'aws3', secretKeyVarible: 'AWS_SECRET_ACCESS_KEY')]) {
             script {
                 sh 'aws eks update-kubeconfig --name dev-eks --region us-east-1'
                 sh 'kubectl apply -f nginx.yaml'
@@ -43,7 +43,7 @@ pipeline{
     }
     }
     steps {
-        withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId: 'aws2', secretKeyVarible: 'AWS_SECRET_ACCESS_KEY')]) {
+        withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId: 'aws3', secretKeyVarible: 'AWS_SECRET_ACCESS_KEY')]) {
          sh 'terraform ${proceed} -auto-approve '
         }
     }
