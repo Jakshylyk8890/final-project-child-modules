@@ -51,14 +51,20 @@ stages {
                 }
             }
         }
+	stage('terraform destroy') {
+    input {
+    message 'Are you sure to destroy all app'
+    id 'envId'
+    ok 'Submit'
+    parameters {
+        choice choices: ['no', 'yes', 'minnn', 'destroy'], name: 'proceed'
     }
-    post {
-	
-       success {
-           emailext to: "jakshylyk.ashyrmamatov@gmail.com",
-            subject: "Sended by Jakshylyk",
-            body: "FROM Jenkins",
-            attachLog: true
-		    }
     }
+    steps {
+        withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId: 'aws2', secretKeyVarible: 'AWS_SECRET_ACCESS_KEY')]) {
+         sh 'terraform ${proceed} -auto-approve '
+        }
+    }
+    }
+   
 }
