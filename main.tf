@@ -2,24 +2,18 @@ provider "aws" {
   region = "us-east-1"
 }
 
-module "vpc-dev" {
-    env = "dev"
-    source = "git::https://github.com/Jakshylyk8890/modules//vpc?ref=main"
-    vpc_cidr = var.vpc
-    public_subnet_cidr = var.public_subnet
-    private_subnet_cidr = var.private_subnet
+module "networking" {
+  source              = "git::https://github.com/Mitya00/aws-terraform-finalmodule.git//vpc?ref=main"
+  env                 = "dev"
+  subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+  vpc_cidr            = "10.0.0.0/16"
+  
+
 }
 
-module "eks-cluster" {
-    env = "dev"
-    source = "git::https://github.com/Jakshylyk8890/modules//eks?ref=main"
-    vpc = module.vpc-dev.aws_vpc
-    private_subnet_id = module.vpc-dev.private_subnets
-    
-}
-module "bastion-host" {
-    source = "git::https://github.com/Jakshylyk8890/modules//instance?ref=main"
-    env = "dev"
-    public_subnet = module.vpc-dev.aws_subnet[0]
-    ec2-sg = module.vpc-dev.sg-for-bastion-host
+module "eks" {
+  source = "git::https://github.com/Mitya00/aws-terraform-finalmodule.git//eks?ref=main"
+env = "dev"
+vpc_id = module.networking.vpc_id
+privet_subnet_ids = module.networking.public_subnets
 }
